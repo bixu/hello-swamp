@@ -16,11 +16,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Format check
-        run: deno fmt --check extensions/
+      - name: Install swamp
+        run: curl -fsSL swamp.club/install.sh | sh
 
-      - name: Lint
-        run: deno lint extensions/
-
-      - name: Test
-        run: deno test extensions/ --allow-read --allow-env=SWAMP_INTEGRATION
+      - name: Run ci-checks workflow
+        run: swamp workflow run ci-checks --json

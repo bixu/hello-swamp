@@ -1,0 +1,11 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 45fad02c-d126-45a9-b4c1-16e6b6adefd9
+name: ci-fmt
+version: 1
+tags: {}
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: deno fmt --check extensions/

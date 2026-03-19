@@ -1,0 +1,34 @@
+id: 0b9c2a4f-2b60-4f55-a12b-8bb1fc835fa0
+name: ci-checks
+description: Run formatting, linting, and tests on extensions/
+tags: {}
+jobs:
+  - name: lint
+    description: Run format check and lint in parallel
+    steps:
+      - name: fmt-check
+        description: Check formatting with deno fmt
+        task:
+          type: model_method
+          modelIdOrName: ci-fmt
+          methodName: execute
+      - name: lint
+        description: Run deno lint
+        task:
+          type: model_method
+          modelIdOrName: ci-lint
+          methodName: execute
+  - name: test
+    description: Run tests after lint passes
+    dependsOn:
+      - job: lint
+        condition:
+          type: succeeded
+    steps:
+      - name: test
+        description: Run deno test
+        task:
+          type: model_method
+          modelIdOrName: ci-test
+          methodName: execute
+version: 1
