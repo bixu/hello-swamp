@@ -19,5 +19,8 @@ jobs:
       - name: Install swamp
         run: curl -fsSL swamp.club/install.sh | sh
 
+      - name: Initialize swamp repo
+        run: swamp init --tool claude --force
+
       - name: Run ci-checks workflow
         run: swamp workflow run ci-checks --json
