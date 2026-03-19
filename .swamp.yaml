@@ -1,21 +1,5 @@
 swampVersion: 20260319.021849.0
-initializedAt: '2026-03-19T08:05:47.880Z'
-repoId: 1fdd4d39-9be9-4340-8514-3aa87763c955
+initializedAt: '2026-03-19T16:34:45.896Z'
+repoId: 9d50a77a-647f-44b9-b6dc-75fb1b252564
 tool: claude
 gitignoreManaged: true
-datastore:
-  type: filesystem
-  path: /Users/blake.irvin/.swamp/hello-swamp
-  directories:
-    - definitions-evaluated
-    - workflows-evaluated
-    - data
-    - outputs
-    - workflow-runs
-    - secrets
-    - bundles
-    - vault-bundles
-    - audit
-    - telemetry
-    - logs
-    - files

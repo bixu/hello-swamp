@@ -49,7 +49,7 @@ Use `swamp --help` to see available commands.
 - **Format before committing.** Run `deno fmt` on all changed files before committing.
 - **Smoke test the full model surface.** Before merging PRs or publishing extensions, run all model methods (start, stop, status, etc.) to verify end-to-end behavior.
 - **Run checks before pushing.** Always run `swamp workflow run ci-checks --json` before every `git push` to catch issues locally.
-- **Check CI after pushing.** Always use `@bixu/github-actions` (`ci-actions` model, `watch` method) to check GitHub Actions CI runs after pushing.
+- **Check CI after pushing.** Always use `@bixu/github-actions` (`ci-actions` model, `watch` method) to check GitHub Actions CI runs after pushing. When the active PR number changes, update the `pr` field in the `ci-actions` model definition before running watch.
 
 ## CI
 

@@ -7,4 +7,8 @@ tags: {}
 globalArguments:
   owner: bixu
   repo: hello-swamp
-methods: {}
+methods:
+  watch:
+    arguments:
+      pr: 2
+      interval: 15
