@@ -35,11 +35,10 @@ async function runCmd(
   return { stdout, stderr, code: output.code };
 }
 
-const ASSETS_DIR = new URL("./express_hello_files/", import.meta.url)
-  .pathname;
-
 async function loadAsset(filename: string): Promise<string> {
-  return await Deno.readTextFile(`${ASSETS_DIR}${filename}`);
+  return await Deno.readTextFile(
+    `extensions/models/express_hello_files/${filename}`,
+  );
 }
 
 export const model = {
