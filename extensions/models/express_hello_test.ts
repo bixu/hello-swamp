@@ -89,53 +89,39 @@ Deno.test("all methods accept empty arguments", () => {
   }
 });
 
-// --- Embedded Dockerfile ---
+// --- Asset files ---
+
+const assetsDir = new URL("./express_hello_files/", import.meta.url).pathname;
 
 Deno.test("Dockerfile uses denoland/deno base image", () => {
-  // Access the embedded Dockerfile via the module's string constants.
-  // We re-import the raw source to inspect embedded strings.
-  const source = Deno.readTextFileSync(
-    new URL("./express_hello.ts", import.meta.url).pathname,
-  );
-  assertStringIncludes(source, "FROM denoland/deno:alpine");
+  const dockerfile = Deno.readTextFileSync(`${assetsDir}Dockerfile`);
+  assertStringIncludes(dockerfile, "FROM denoland/deno:alpine");
 });
 
 Deno.test("Dockerfile exposes port 3000", () => {
-  const source = Deno.readTextFileSync(
-    new URL("./express_hello.ts", import.meta.url).pathname,
-  );
-  assertStringIncludes(source, "EXPOSE 3000");
+  const dockerfile = Deno.readTextFileSync(`${assetsDir}Dockerfile`);
+  assertStringIncludes(dockerfile, "EXPOSE 3000");
 });
 
 Deno.test("Dockerfile uses --allow-net and --allow-read permissions", () => {
-  const source = Deno.readTextFileSync(
-    new URL("./express_hello.ts", import.meta.url).pathname,
-  );
-  assertStringIncludes(source, "--allow-net");
-  assertStringIncludes(source, "--allow-read=.");
+  const dockerfile = Deno.readTextFileSync(`${assetsDir}Dockerfile`);
+  assertStringIncludes(dockerfile, "--allow-net");
+  assertStringIncludes(dockerfile, "--allow-read=.");
 });
 
-// --- Embedded app code ---
-
-Deno.test("embedded app uses Deno.serve", () => {
-  const source = Deno.readTextFileSync(
-    new URL("./express_hello.ts", import.meta.url).pathname,
-  );
-  assertStringIncludes(source, "Deno.serve");
+Deno.test("app.ts uses Deno.serve", () => {
+  const appTs = Deno.readTextFileSync(`${assetsDir}app.ts`);
+  assertStringIncludes(appTs, "Deno.serve");
 });
 
-Deno.test("embedded app has escapeHtml function", () => {
-  const source = Deno.readTextFileSync(
-    new URL("./express_hello.ts", import.meta.url).pathname,
-  );
-  assertStringIncludes(source, "function escapeHtml");
+Deno.test("app.ts has escapeHtml function", () => {
+  const appTs = Deno.readTextFileSync(`${assetsDir}app.ts`);
+  assertStringIncludes(appTs, "function escapeHtml");
 });
 
-Deno.test("embedded HTML template has image placeholder", () => {
-  const source = Deno.readTextFileSync(
-    new URL("./express_hello.ts", import.meta.url).pathname,
-  );
-  assertStringIncludes(source, "{{IMAGE_BLOCK}}");
+Deno.test("index.html has image placeholder", () => {
+  const indexHtml = Deno.readTextFileSync(`${assetsDir}index.html`);
+  assertStringIncludes(indexHtml, "{{IMAGE_BLOCK}}");
 });
 
 // --- swamp model validate integration (requires swamp CLI) ---
