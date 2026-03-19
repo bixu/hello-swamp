@@ -1,0 +1,11 @@
+{
+  "fmt": {
+    "exclude": ["extensions/models/express_hello_files/"]
+  },
+  "lint": {
+    "exclude": ["extensions/models/express_hello_files/"],
+    "rules": {
+      "exclude": ["no-import-prefix"]
+    }
+  }
+}

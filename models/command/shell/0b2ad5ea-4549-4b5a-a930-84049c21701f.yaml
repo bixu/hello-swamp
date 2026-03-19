@@ -1,0 +1,11 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 0b2ad5ea-4549-4b5a-a930-84049c21701f
+name: ci-test
+version: 1
+tags: {}
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: deno test extensions/ --allow-read --allow-env=SWAMP_INTEGRATION

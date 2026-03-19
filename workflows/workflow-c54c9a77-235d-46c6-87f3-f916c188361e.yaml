@@ -1,0 +1,27 @@
+id: c54c9a77-235d-46c6-87f3-f916c188361e
+name: local-dev
+description: Run CI checks then start the app locally in Docker
+tags: {}
+jobs:
+  - name: checks
+    description: Run CI checks before starting
+    steps:
+      - name: ci
+        description: Run ci-checks workflow
+        task:
+          type: workflow
+          workflowIdOrName: ci-checks
+  - name: start
+    description: Build and start the app container
+    dependsOn:
+      - job: checks
+        condition:
+          type: succeeded
+    steps:
+      - name: start-app
+        description: Start hello-app in Docker
+        task:
+          type: model_method
+          modelIdOrName: hello-app
+          methodName: start
+version: 1

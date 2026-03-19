@@ -35,104 +35,11 @@ async function runCmd(
   return { stdout, stderr, code: output.code };
 }
 
-const DOCKERFILE = `FROM denoland/deno:alpine
-WORKDIR /app
-COPY app.ts index.html ./
-EXPOSE 3000
-CMD ["run", "--allow-net", "--allow-read=.", "app.ts"]
-`;
-
-const INDEX_HTML = `<!DOCTYPE html>
-<html>
-<head>
-  <title>Hello, Swamp!</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin: 2em;
-      background: #1a1a2e;
-      color: #e0e0e0;
-    }
-    img {
-      max-width: 800px;
-      max-height: 600px;
-      border-radius: 8px;
-      margin-top: 1em;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
-    a { color: #7ec8e3; }
-  </style>
-</head>
-<body>
-  <h1>Hello, Swamp!</h1>
-  <p>Random image from <a href="https://en.wikipedia.org">Wikipedia</a>:</p>
-  {{IMAGE_BLOCK}}
-  <p style="margin-top: 1em"><a href="/">Refresh for another</a></p>
-</body>
-</html>
-`;
-
-const APP_TS = `const template = await Deno.readTextFile("index.html");
-
-async function getRandomWikiImage(): Promise<{
-  imgUrl: string;
-  articleUrl: string;
-  articleTitle: string;
-}> {
-  const ua = { headers: { "Api-User-Agent": "SwampExpressHello/1.0" } };
-  const res = await fetch(
-    "https://en.wikipedia.org/w/api.php?action=query&generator=random" +
-    "&grnnamespace=6&grnlimit=10&prop=imageinfo|fileusage" +
-    "&iiprop=url|mime&iiurlwidth=800&fulimit=1&format=json",
-    ua,
+async function loadAsset(filename: string): Promise<string> {
+  return await Deno.readTextFile(
+    `extensions/models/express_hello_files/${filename}`,
   );
-  const data = await res.json();
-  if (!data.query || !data.query.pages) {
-    return { imgUrl: "", articleUrl: "", articleTitle: "" };
-  }
-  const pages = Object.values(data.query.pages) as any[];
-  const images = pages.filter(
-    (p: any) =>
-      p.imageinfo?.[0]?.mime?.startsWith("image/") &&
-      p.fileusage?.length > 0,
-  );
-  if (images.length === 0) {
-    return { imgUrl: "", articleUrl: "", articleTitle: "" };
-  }
-  const pick = images[Math.floor(Math.random() * images.length)];
-  const imgUrl = pick.imageinfo[0].thumburl || pick.imageinfo[0].url;
-  const article = pick.fileusage[0];
-  const articleUrl =
-    "https://en.wikipedia.org/wiki/" +
-    encodeURIComponent(article.title.replace(/ /g, "_"));
-  return { imgUrl, articleUrl, articleTitle: article.title };
 }
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-Deno.serve({ port: 3000 }, async (_req: Request): Promise<Response> => {
-  const { imgUrl, articleUrl, articleTitle } = await getRandomWikiImage();
-  let imageBlock: string;
-  if (imgUrl) {
-    imageBlock =
-      '<a href="' + escapeHtml(articleUrl) + '" target="_blank">' +
-      '<img src="' + escapeHtml(imgUrl) + '" />' +
-      "</a>" +
-      '<p>From: <a href="' + escapeHtml(articleUrl) + '" target="_blank">' +
-      escapeHtml(articleTitle) +
-      "</a></p>";
-  } else {
-    imageBlock = "<p>No image found, refresh to try again.</p>";
-  }
-  return new Response(template.replace("{{IMAGE_BLOCK}}", imageBlock), {
-    headers: { "content-type": "text/html; charset=utf-8" },
-  });
-});
-`;
 
 export const model = {
   type: "@bixu/express-hello",
@@ -193,11 +100,18 @@ export const model = {
           }
         }
 
+        // Load assets from separate files
+        const [dockerfile, appTs, indexHtml] = await Promise.all([
+          loadAsset("Dockerfile"),
+          loadAsset("app.ts"),
+          loadAsset("index.html"),
+        ]);
+
         // Write build context to a temp dir
         const tmpDir = await Deno.makeTempDir({ prefix: "swamp-express-" });
-        await Deno.writeTextFile(`${tmpDir}/Dockerfile`, DOCKERFILE);
-        await Deno.writeTextFile(`${tmpDir}/app.ts`, APP_TS);
-        await Deno.writeTextFile(`${tmpDir}/index.html`, INDEX_HTML);
+        await Deno.writeTextFile(`${tmpDir}/Dockerfile`, dockerfile);
+        await Deno.writeTextFile(`${tmpDir}/app.ts`, appTs);
+        await Deno.writeTextFile(`${tmpDir}/index.html`, indexHtml);
 
         // Build image
         logger.info("Building Docker image...");

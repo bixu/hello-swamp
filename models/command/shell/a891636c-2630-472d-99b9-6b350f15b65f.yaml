@@ -1,0 +1,11 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: a891636c-2630-472d-99b9-6b350f15b65f
+name: ci-lint
+version: 1
+tags: {}
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: deno lint extensions/

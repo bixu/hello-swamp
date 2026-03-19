@@ -38,15 +38,23 @@ Always start by using the `swamp-model` skill to work with swamp models.
 Use `swamp --help` to see available commands.
 <!-- END swamp managed section -->
 
+## Coding Conventions
+
+- **No inline file content in extension models.** Never embed Dockerfiles, HTML, or app source as string constants in TypeScript. Instead, keep them as separate files and load them at runtime (e.g., `Deno.readTextFile`). This lets users check syntax with proper editor support and tooling.
+- **Pin GitHub Actions by full SHA.** Always use the full commit SHA for action references (e.g., `uses: actions/checkout@<full-sha>`) instead of version tags.
+
 ## Quality Gates
 
 - **Test coverage required.** Always add tests for new code and changes to extension models.
 - **Format before committing.** Run `deno fmt` on all changed files before committing.
 - **Smoke test the full model surface.** Before merging PRs or publishing extensions, run all model methods (start, stop, status, etc.) to verify end-to-end behavior.
+- **Run checks before pushing.** Always run `swamp workflow run ci-checks --json` before every `git push` to catch issues locally.
+- **Check CI after pushing.** Always use `@bixu/github-actions` (`ci-actions` model, `watch` method) to check GitHub Actions CI runs after pushing. When the active PR number changes, update the `pr` field in the `ci-actions` model definition before running watch.
 
 ## CI
 
-- GitHub Actions workflow at `.github/workflows/ci.yml` runs `deno fmt --check`, `deno lint`, and `deno test` on `extensions/`.
+- GitHub Actions workflow at `.github/workflows/ci.yml` installs swamp and runs the `ci-checks` swamp workflow.
+- The `ci-checks` workflow runs `deno fmt --check`, `deno lint`, and `deno test` on `extensions/` via `command/shell` models.
 - Integration tests requiring the swamp CLI are gated behind the `SWAMP_INTEGRATION` env var and skipped in CI.
-- Run locally: `deno test extensions/ --allow-read --allow-env=SWAMP_INTEGRATION`
+- Run locally: `swamp workflow run ci-checks --json`
 - Run with integration tests: `SWAMP_INTEGRATION=1 deno test extensions/ --allow-read --allow-env=SWAMP_INTEGRATION --allow-run=swamp`
