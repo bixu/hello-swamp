@@ -1,0 +1,10 @@
+type: '@bixu/github-actions'
+typeVersion: 2026.03.18.2
+id: 5475fa13-a978-4a8b-b1d6-f10f120b3172
+name: ci-actions
+version: 1
+tags: {}
+globalArguments:
+  owner: bixu
+  repo: hello-swamp
+methods: {}
